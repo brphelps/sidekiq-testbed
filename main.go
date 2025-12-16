@@ -18,7 +18,7 @@ func SleepWorker(message *workers.Msg) {
 	log.Printf("Completed job at %s", time.Now().Format(time.RFC3339))
 }
 
-func scheduleJobs() {
+func scheduleJobs(done <-chan struct{}) {
 	// Schedule job to run twice per minute (every 30 seconds)
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
@@ -40,6 +40,9 @@ func scheduleJobs() {
 			} else {
 				log.Println("Job enqueued")
 			}
+		case <-done:
+			log.Println("Scheduler shutting down...")
+			return
 		}
 	}
 }
@@ -71,8 +74,11 @@ func main() {
 
 	log.Printf("Starting Sidekiq worker connected to Redis at %s", redisServer)
 
+	// Create a done channel for graceful shutdown
+	done := make(chan struct{})
+
 	// Start the scheduler in a separate goroutine
-	go scheduleJobs()
+	go scheduleJobs(done)
 
 	// Start processing jobs
 	go workers.Run()
@@ -83,5 +89,6 @@ func main() {
 	<-quit
 
 	fmt.Println("\nShutting down gracefully...")
+	close(done) // Signal scheduler to stop
 	workers.Quit()
 }
