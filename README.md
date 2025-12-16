@@ -11,7 +11,7 @@ A Go application that uses Sidekiq-compatible workers to schedule and execute jo
 
 ## Prerequisites
 
-- Go 1.20 or higher
+- Go 1.18 or higher (tested with Go 1.24+)
 - Redis server running and accessible
 
 ## Configuration
