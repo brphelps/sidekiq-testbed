@@ -40,6 +40,16 @@ go build -o sidekiq-testbed
 
 ## Running
 
+### With Docker Compose (Recommended)
+
+The easiest way to run the application with Redis:
+
+```bash
+docker-compose up
+```
+
+This will start both Redis and the application. The application will connect to Redis automatically.
+
 ### With environment variables
 
 ```bash
@@ -69,6 +79,20 @@ Run the application in development mode:
 
 ```bash
 go run main.go
+```
+
+### Using Docker
+
+Build the Docker image:
+
+```bash
+docker build -t sidekiq-testbed .
+```
+
+Run with Docker:
+
+```bash
+docker run -e REDIS_SERVER=host.docker.internal:6379 sidekiq-testbed
 ```
 
 ## Architecture
